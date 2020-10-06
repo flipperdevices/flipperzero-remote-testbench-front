@@ -1,8 +1,16 @@
-# flipperzero-remote-testbench-front
-Remote testbench for Flipper zero - Frontend
+# Flipper Zero Remote test Bench [Front-ed Server]
 
-This repo contains front part of our dolphinarium.
+Fliper Zero Remote test bech — is hardware + software system for remotely control current Flipper Zero dev board. It is used for automated and manually testing. This repo contains files of Front-end Server.  
 
-Now here placed demo page with webcam translation from real device and some buttons to control it.
+**URL:** https://lab.flipperzero.one  
 
-Updated backend API and it's endpoints will be available soon.
+## Project sctructure 
+![](https://habrastorage.org/webt/ql/y9/af/qly9afe06nbwyysdgpdzgntkepk.png)
+
+```
+.
+├── www          # Web UI
+├── nginx        # RTMP Streamer config
+└── Dockerfile   # Docker files
+```
+
