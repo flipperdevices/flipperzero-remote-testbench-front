@@ -1,0 +1,368 @@
+<html>
+<head>
+   <meta charset="UTF-8">
+   <title>Flipper zero remote test bench</title>
+</head>
+<body>
+    <div id="cam">
+
+<style>
+  .centeredVideo {
+    width: 640px;
+    height: 480px;
+  }
+</style>
+
+   <div class="video-container">
+      <div>
+        <video name="videoElement" class="centeredVideo" autoplay muted>
+          Your browser is too old which doesn't support HTML5 video.
+        </video>
+      </div>
+    </div>
+    
+  <script src="http://bilibili.github.io/flv.js/dist/flv.js"></script>
+
+  <script>
+    var element = document.getElementsByName('videoElement')[0];
+
+    function reset() {
+      if (typeof player !== "undefined") {
+        if (player != null) {
+          player.unload();
+          player.detachMediaElement();
+          player.destroy();
+          player = null;
+        }
+      }
+      player = flvjs.createPlayer({
+        type: 'flv',
+        url: 'http://lab.flipperzero.one:8080/live?port=1985&app=myapp&stream=randomname',
+      },
+                                  {
+        enableWorker: false,
+        lazyLoadMaxDuration: 3 * 60,
+        seekType: 'range',
+      });
+      player.attachMediaElement(element);
+      player.load();
+      player.play();
+    }
+    reset();
+
+    document.addEventListener('visibilitychange', reset);
+  </script>
+    </div>
+
+    <div id="flipper-btns">
+        <table border="0">
+            <tr>
+                <td>&nbsp;</td>
+                <td><button id="btn_up">&uarr;</button></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><button id="btn_left">&larr;</button></td>
+                <td><button id="btn_ok">&#9673;</button></td>
+                <td><button id="btn_right">&rarr;</button></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><button id="btn_down">&darr;</button></td>
+                <td>&nbsp;</td>
+                <td><button id="btn_back">&#x2B8C;</button></td>
+            </tr>
+        </table>
+    </div>
+    <button id="btn_reset">Reset target</button>
+    <hr>
+    
+    <div id="messages">
+        <span>Messages:</span><br>
+        <textarea id="messages_text" cols="128" rows="10"></textarea>
+       
+    </div>
+    <hr>
+    
+    <div>
+      <button onclick="javascript:location.reload(true);">Refresh page</button>
+<div style="display:none;">
+      <button id="button_close">Close the connection</button>
+</div>
+      
+    </div>
+    <hr>
+    
+    <div id="firmware_upload">
+        <p>Firmware uploader
+            <form id="formAjax" action="http://flipper.lh0.ru/api.php" method="POST">
+                <span>Firmware binary: </span>
+                <input type="file" id="firmware_bin" name="firmware_bin" /> <br>
+                <span>Address: </span>
+                <input type="input" id="firmware_addr" name="firmware_addr" value="0x08000000" /> <br>
+                <input type="submit" id="submit" name="submit" value="Flash" />
+            </form>
+            <span id="firmware_upload_status"></span>
+        </p>
+    </div>
+    <hr>
+
+<script>
+    function message_add(msg) {
+        var txtarea = document.getElementById('messages_text');
+        txtarea.innerHTML = txtarea.innerHTML + "\n" + msg;
+        txtarea.scrollTop = txtarea.scrollHeight;
+    } //
+    
+    var button_close = document.querySelector('#button_close');
+    var evtSource = new EventSource('http://flipper.lh0.ru/messages-sse.php');
+    console.log(evtSource.withCredentials);
+    console.log(evtSource.readyState);
+    console.log(evtSource.url);
+    
+    //var eventList = document.querySelector('#messages ul');
+    
+    evtSource.onopen = function() {
+        message_add("Connection to server opened.");
+    };
+    
+    evtSource.onmessage = function(e) {
+        //var newElement = document.createElement("li");
+        //newElement.textContent = "message: " + e.data;
+        //eventList.appendChild(newElement);
+        message_add(e.data);
+    };
+    
+    evtSource.onerror = function() {
+        console.log("EventSource failed.");
+    };
+    
+    button_close.onclick = function() {
+        evtSource.close();
+        console.log('Connection closed');
+        message_add('Connection closed');
+    };
+    
+    // evtSource.addEventListener("ping", function(e) {
+    //   var newElement = document.createElement("li");
+    //
+    //   var obj = JSON.parse(e.data);
+    //   newElement.innerHTML = "ping at " + obj.time;
+    //   eventList.appendChild(newElement);
+    // }, false);
+
+    //
+    // Buttons
+    //
+
+
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_up');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=up';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_down');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=down';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_left');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=left';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_right');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=right';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_ok');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=ok';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_back');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=back';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+    
+    document.addEventListener("DOMContentLoaded",function() {
+      var mybutton = document.getElementById('btn_reset');
+      mybutton.addEventListener("click", function(){
+          
+        //var name = document.getElementById('name').value;
+        name = 'btn=reset';
+        var request = new XMLHttpRequest();
+        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
+        request.addEventListener('readystatechange', function() {
+          if ((request.readyState==4) && (request.status==200)) {
+            console.log(request);
+            console.log(request.responseText);
+            //alert(request.responseText);
+            message_add(request.responseText);
+            //var welcome = document.getElementById('welcome');
+            //welcome.innerHTML = request.responseText;
+          }
+        });
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        request.send(name);
+      });
+    });
+
+var myForm = document.getElementById('formAjax');  // Our HTML form's ID
+var myFile = document.getElementById('firmware_bin');  // Our HTML files' ID
+var addr = document.getElementById('firmware_addr');  // Address to flash
+var statusP = document.getElementById('firmware_upload_status');
+
+myForm.onsubmit = function(event) {
+    event.preventDefault();
+
+    statusP.innerHTML = 'Uploading...';
+
+    var files = myFile.files;
+
+    var formData = new FormData();
+
+    var file = files[0]; 
+
+    // Check the file type
+    //if (!file.type.match('image.*')) {
+    //    statusP.innerHTML = 'The file selected is not an image.';
+    //    return;
+    //}
+
+    formData.append('firmware_bin', file, file.name);
+    formData.append('firmware_address', addr.value);
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', 'http://flipper.lh0.ru/api.php', true);
+
+    xhr.onload = function () {
+      if (xhr.status == 200) {
+        statusP.innerHTML = 'Upload copmlete!';
+        message_add("Firmware upload completed. Flashing...");
+        message_add(xhr.responseText);
+      } else {
+        statusP.innerHTML = 'Upload error. Try again.';
+        message_add("Firmware upload error!");
+      }
+    };
+
+    xhr.send(formData);
+}
+
+
+</script>
+</body>
+</html>
