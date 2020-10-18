@@ -1,0 +1,32 @@
+{
+    "theme_color": "#08001b",
+    "background_color": "#08001b",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "app_name": "Flipper Lab",
+    "short_name": "Flipper Lab",
+    "description": "Swimming pool for cyber dolphin",
+    "icons": [
+        {
+            "src": "/images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/icon-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
