@@ -628,7 +628,7 @@ input, button {
 
 
 /* Show Console Only */
-@media screen and (max-width: 600px) and (max-height: 600px) {
+@media screen and (max-width: 600px) and (max-height: 500px) {
     #screen-1,
     .gutter {
         display: none;
