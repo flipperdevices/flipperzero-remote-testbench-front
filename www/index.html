@@ -1,368 +1,202 @@
+<!DOCTYPE html>
 <html>
 <head>
-   <meta charset="UTF-8">
-   <title>Flipper zero remote test bench</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#08001b">
+    <title>Flipper Lab</title>
+    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <script src="/libs/flv/flv.js"></script>
+    <script src="/libs/split/split.min.js"></script>
 </head>
 <body>
-    <div id="cam">
-
-<style>
-  .centeredVideo {
-    width: 640px;
-    height: 480px;
-  }
-</style>
-
-   <div class="video-container">
-      <div>
-        <video name="videoElement" class="centeredVideo" autoplay muted>
-          Your browser is too old which doesn't support HTML5 video.
-        </video>
-      </div>
-    </div>
-    
-  <script src="http://bilibili.github.io/flv.js/dist/flv.js"></script>
-
-  <script>
-    var element = document.getElementsByName('videoElement')[0];
-
-    function reset() {
-      if (typeof player !== "undefined") {
-        if (player != null) {
-          player.unload();
-          player.detachMediaElement();
-          player.destroy();
-          player = null;
-        }
-      }
-      player = flvjs.createPlayer({
-        type: 'flv',
-        url: 'http://lab.flipperzero.one:8080/live?port=1985&app=myapp&stream=randomname',
-      },
-                                  {
-        enableWorker: false,
-        lazyLoadMaxDuration: 3 * 60,
-        seekType: 'range',
-      });
-      player.attachMediaElement(element);
-      player.load();
-      player.play();
-    }
-    reset();
-
-    document.addEventListener('visibilitychange', reset);
-  </script>
-    </div>
-
-    <div id="flipper-btns">
-        <table border="0">
-            <tr>
-                <td>&nbsp;</td>
-                <td><button id="btn_up">&uarr;</button></td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td><button id="btn_left">&larr;</button></td>
-                <td><button id="btn_ok">&#9673;</button></td>
-                <td><button id="btn_right">&rarr;</button></td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><button id="btn_down">&darr;</button></td>
-                <td>&nbsp;</td>
-                <td><button id="btn_back">&#x2B8C;</button></td>
-            </tr>
-        </table>
-    </div>
-    <button id="btn_reset">Reset target</button>
-    <hr>
-    
-    <div id="messages">
-        <span>Messages:</span><br>
-        <textarea id="messages_text" cols="128" rows="10"></textarea>
-       
-    </div>
-    <hr>
-    
-    <div>
-      <button onclick="javascript:location.reload(true);">Refresh page</button>
-<div style="display:none;">
-      <button id="button_close">Close the connection</button>
-</div>
-      
-    </div>
-    <hr>
-    
-    <div id="firmware_upload">
-        <p>Firmware uploader
-            <form id="formAjax" action="http://flipper.lh0.ru/api.php" method="POST">
-                <span>Firmware binary: </span>
-                <input type="file" id="firmware_bin" name="firmware_bin" /> <br>
-                <span>Address: </span>
-                <input type="input" id="firmware_addr" name="firmware_addr" value="0x08000000" /> <br>
-                <input type="submit" id="submit" name="submit" value="Flash" />
-            </form>
-            <span id="firmware_upload_status"></span>
-        </p>
-    </div>
-    <hr>
-
-<script>
-    function message_add(msg) {
-        var txtarea = document.getElementById('messages_text');
-        txtarea.innerHTML = txtarea.innerHTML + "\n" + msg;
-        txtarea.scrollTop = txtarea.scrollHeight;
-    } //
-    
-    var button_close = document.querySelector('#button_close');
-    var evtSource = new EventSource('http://flipper.lh0.ru/messages-sse.php');
-    console.log(evtSource.withCredentials);
-    console.log(evtSource.readyState);
-    console.log(evtSource.url);
-    
-    //var eventList = document.querySelector('#messages ul');
-    
-    evtSource.onopen = function() {
-        message_add("Connection to server opened.");
-    };
-    
-    evtSource.onmessage = function(e) {
-        //var newElement = document.createElement("li");
-        //newElement.textContent = "message: " + e.data;
-        //eventList.appendChild(newElement);
-        message_add(e.data);
-    };
-    
-    evtSource.onerror = function() {
-        console.log("EventSource failed.");
-    };
-    
-    button_close.onclick = function() {
-        evtSource.close();
-        console.log('Connection closed');
-        message_add('Connection closed');
-    };
-    
-    // evtSource.addEventListener("ping", function(e) {
-    //   var newElement = document.createElement("li");
-    //
-    //   var obj = JSON.parse(e.data);
-    //   newElement.innerHTML = "ping at " + obj.time;
-    //   eventList.appendChild(newElement);
-    // }, false);
-
-    //
-    // Buttons
-    //
-
-
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_up');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=up';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_down');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=down';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_left');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=left';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_right');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=right';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_ok');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=ok';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_back');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=back';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-    
-    document.addEventListener("DOMContentLoaded",function() {
-      var mybutton = document.getElementById('btn_reset');
-      mybutton.addEventListener("click", function(){
-          
-        //var name = document.getElementById('name').value;
-        name = 'btn=reset';
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://flipper.lh0.ru/api.php',true);
-        request.addEventListener('readystatechange', function() {
-          if ((request.readyState==4) && (request.status==200)) {
-            console.log(request);
-            console.log(request.responseText);
-            //alert(request.responseText);
-            message_add(request.responseText);
-            //var welcome = document.getElementById('welcome');
-            //welcome.innerHTML = request.responseText;
-          }
-        });
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        request.send(name);
-      });
-    });
-
-var myForm = document.getElementById('formAjax');  // Our HTML form's ID
-var myFile = document.getElementById('firmware_bin');  // Our HTML files' ID
-var addr = document.getElementById('firmware_addr');  // Address to flash
-var statusP = document.getElementById('firmware_upload_status');
-
-myForm.onsubmit = function(event) {
-    event.preventDefault();
-
-    statusP.innerHTML = 'Uploading...';
-
-    var files = myFile.files;
-
-    var formData = new FormData();
-
-    var file = files[0]; 
-
-    // Check the file type
-    //if (!file.type.match('image.*')) {
-    //    statusP.innerHTML = 'The file selected is not an image.';
-    //    return;
-    //}
-
-    formData.append('firmware_bin', file, file.name);
-    formData.append('firmware_address', addr.value);
-
-    var xhr = new XMLHttpRequest();
-
-    xhr.open('POST', 'http://flipper.lh0.ru/api.php', true);
-
-    xhr.onload = function () {
-      if (xhr.status == 200) {
-        statusP.innerHTML = 'Upload copmlete!';
-        message_add("Firmware upload completed. Flashing...");
-        message_add(xhr.responseText);
-      } else {
-        statusP.innerHTML = 'Upload error. Try again.';
-        message_add("Firmware upload error!");
-      }
-    };
-
-    xhr.send(formData);
-}
-
-
-</script>
+    <input type="file" id="upload-selector" class="hidden">
+    <main class="content">
+        <div class="splitscreen">
+            <div id="screen-1">
+                <h1 class="content__title">Flipper Lab</h1>
+                <section class="flipper">
+                    <!-- Device: viewBox="240 170 720 300" -->
+                    <!-- Interface: viewBox="409 190 515 158" -->
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flipper__art" class="flipper__art" viewBox="0 0 1200 580">
+                        <defs>
+                            <linearGradient id="z">
+                                <stop offset="0" stop-color="#c6c5c3" stop-opacity="1" />
+                                <stop offset="1" stop-color="#d9d8d6" stop-opacity="1" />
+                            </linearGradient>
+                            <linearGradient id="x">
+                                <stop offset="0" stop-color="#c6c5c3" stop-opacity="1" />
+                                <stop offset="1" stop-color="#d9d8d6" stop-opacity="1" />
+                            </linearGradient>
+                            <linearGradient id="e">
+                                <stop offset="0" stop-color="#bebebe" />
+                                <stop offset=".3" stop-color="#fff" stop-opacity=".99" />
+                                <stop offset=".75" stop-color="#fff" />
+                                <stop offset="1" stop-color="#bebebe" stop-opacity="0" />
+                            </linearGradient>
+                            <linearGradient id="d">
+                                <stop offset="0" stop-color="#515151" />
+                                <stop offset=".18" stop-color="#939393" />
+                                <stop offset=".92" stop-color="#939393" />
+                                <stop offset="1" stop-color="#616161" />
+                            </linearGradient>
+                            <linearGradient id="c">
+                                <stop offset="0" stop-color="#fff" stop-opacity="0" />
+                                <stop offset=".44" stop-color="#fff" stop-opacity=".98" />
+                                <stop offset=".56" stop-color="#fff" />
+                                <stop offset="1" stop-color="#fff" stop-opacity="0" />
+                            </linearGradient>
+                            <linearGradient id="b">
+                                <stop offset="0" stop-color="#fff" stop-opacity="0" />
+                                <stop offset=".31" stop-color="#fff" stop-opacity=".28" />
+                                <stop offset=".37" stop-color="#fff" stop-opacity=".35" />
+                                <stop offset=".62" stop-opacity=".2" />
+                                <stop offset="1" stop-opacity="0" />
+                            </linearGradient>
+                            <linearGradient id="a">
+                                <stop offset="0" stop-color="#fff" stop-opacity="0" />
+                                <stop offset=".56" stop-color="#fff" />
+                                <stop offset="1" stop-color="#fff" stop-opacity="0" />
+                            </linearGradient>
+                            <linearGradient id="h" x1="933.38" x2="994.03" y1="274.12" y2="248.32" gradientTransform="matrix(1.01356 0 0 1.0029 -46.3 102.65)" gradientUnits="userSpaceOnUse" xlink:href="#a" />
+                            <linearGradient id="i" x1="406.53" x2="483.34" y1="147.23" y2="10.67" gradientTransform="matrix(1.01356 0 0 1.0029 -46.3 102.65)" gradientUnits="userSpaceOnUse" xlink:href="#b" />
+                            <linearGradient id="g" x1="363.82" x2="387.22" y1="169.61" y2="278.11" gradientTransform="matrix(1.01356 0 0 1.0029 -46.3 102.65)" gradientUnits="userSpaceOnUse" xlink:href="#c" />
+                            <linearGradient id="f" x1="283.42" x2="992.35" y1="328.16" y2="328.16" gradientTransform="matrix(1.01356 0 0 1.0029 -46.3 102.65)" gradientUnits="userSpaceOnUse" xlink:href="#d" />
+                            <linearGradient id="j" x1="856.05" x2="1013.34" y1="50.64" y2="223.45" gradientTransform="matrix(1.01356 0 0 1.0029 -46.3 102.65)" gradientUnits="userSpaceOnUse" xlink:href="#e" />
+                            <linearGradient id="y" x1="704" x2="704" y1="190" y2="348" gradientUnits="userSpaceOnUse" xlink:href="#x" />
+                            <linearGradient id="w" x1="409" x2="409" y1="190" y2="348" gradientUnits="userSpaceOnUse" xlink:href="#z" />
+                        </defs>
+                        <g id="flipper__decorations">
+                            <path fill-opacity=".5" d="M20 180h180v280H20zm980 0h180v280h-180z" />
+                            <image width="180" height="280" x="20" y="180" href="/images/sidescreen.svg" />
+                            <image width="180" height="280" x="1000" y="180" href="/images/sidescreen.svg" />
+                            <path fill="#2b8949" d="M107 85v95H20v25h4v-21h172v21h4v-25h-87V91h134v-6zm846 0v6h134v89h-87v25h4v-21h172v21h4v-25h-87V85zM20 435v25h87v95h260v-6H113v-89h87v-25h-4v21H24v-21zm980 0v25h87v89H833v6h260v-95h87v-25h-4v21h-172v-21z" />
+                            <path fill="#f9f9f9" d="M788 85h4v60h-4zm-358 0h4v60h-4z" />
+                            <text id="text2141" fill="#f9f9f9" font-family="Born2bSportyV2" font-size="28" text-anchor="middle">
+                                <tspan x="430" y="30">Watch real screen from</tspan>
+                                <tspan x="430" y="60">our live stand</tspan>
+                                <tspan x="790" y="30">Control Flipper's buttons and</tspan>
+                                <tspan x="790" y="60">D-pad from your keyboard</tspan>
+                                <tspan x="510" y="560">Upload your-own code</tspan>
+                            </text>
+                            <g id="flipper__button-open-file">
+                                <path fill="#ce7024" stroke="#f9f9f9" stroke-width="8" d="M660 537h139v30H660z" paint-order="stroke fill" />
+                                <text x="728" y="558" fill="#f9f9f9" font-family="Born2bSportyV2" font-size="22" text-anchor="middle">Open File</text>
+                            </g>
+                        </g>
+                        <g id="flipper__body">
+                            <path fill="url(#f)" d="M384.04 195.98c-18.95 0-35.66 11-46.22 27.04l-88.31 97.66c-10.2 13.82-3.38 32.2.73 38.19 4.1 5.99 64.23 96.02 66.66 99.27 5.32 7.1 17.7 11.86 27.15 11.86l567.64-.09c42.2-.1 48.64-43.36 48.3-59.67l-1.92-95.54c-.23-11.3-13.58-24.7-13.58-24.7l-68-82.09s-8.06-11.93-33.06-11.93zm45.74 4.34h244.38c5.74 0 10.36 4.57 10.36 10.25V335.1c0 5.68-4.62 10.25-10.36 10.25H429.78a10.28 10.28 0 01-10.36-10.25V210.57c0-5.68 4.62-10.25 10.36-10.25z" />
+                            <path fill="#bebebe" d="M384.05 170c-18.95 0-35.66 11-46.21 27.04L246.6 316.9c-10.2 13.83-7.5 26.23.73 38.2l57.4 77.06c5.24 6.2 18.4 13.52 27.86 13.5l597.35-1.44c25.5-.06 30.24-15.89 30-30.53l-1.92-124.97c-.17-11.3-13.58-24.7-13.58-24.7l-67.94-82.19S868.4 170 843.4 170zm45.74 30.32h244.38c5.74 0 10.36 4.57 10.36 10.25V335.1c0 5.68-4.62 10.25-10.36 10.25H429.79a10.28 10.28 0 01-10.36-10.25V210.57c0-5.68 4.62-10.25 10.36-10.25z" />
+                            <path fill="url(#g)" d="M419.42 223.97l-102.5.53-70.3 92.4c-10.2 13.83-7.5 26.23.72 38.2l57.4 77.06c5.24 6.2 18.4 13.52 27.86 13.5l161.35-.4 82.65-99.9H429.78a10.28 10.28 0 01-10.36-10.26z" opacity=".44" />
+                            <path fill="url(#h)" d="M918.48 232.6l-160.84 67.57 104.2 144.21 68.1-.16c25.5-.06 30.25-15.89 30.02-30.53l-1.93-124.97c-.17-11.3-13.58-24.7-13.58-24.7z" opacity=".47" />
+                            <path fill="url(#i)" d="M384.04 170c-18.95 0-35.66 11-46.21 27.04l-25.68 33.74 107.27 103.49v-123.7c0-5.68 4.62-10.25 10.36-10.25h244.38c5.74 0 10.36 4.57 10.36 10.25v17.73L801.49 170zm46.87 175.35l6.39 6.16 12.34-6.16z" opacity=".32" />
+                            <path fill="url(#j)" d="M654.83 170l-19.35 30.32h38.68c5.74 0 10.36 4.57 10.36 10.25v105.6l219.52 43.7 55.12 1.54-1.13-72.69c-.17-11.3-13.58-24.7-13.58-24.7l-67.95-82.19S868.39 170 843.4 170z" opacity=".54" />
+                            <path fill="#e5e5e5" d="M433.4 178.02c-18.92 0-29.8 11-40.34 27.04l-66.22 104.48c-10.2 13.83-10.85 18.77.73 30.22l35.36 36.84c5.24 6.21 9.6 7.07 19.06 7.07l532.1-1.43c25.5-.07 28.48-13.89 27.99-28.52l-1.93-56.98c-.38-11.29-11.55-24.7-11.55-24.7l-67.96-82.18s-8.1-11.84-33.1-11.84z" />
+                            <g id="flipper__body__logo">
+                                <path fill="#ce7024" d="M690.5 409.66l-.44.96-1 .28H657.2l.53-3.77h31.88l.9.28.16.96zm6.9-7.37c-.8-.97-2.23-1.45-4.3-1.45h-41.8l-3.71 26.37h7.3l1.42-10.02h34.47c2.06 0 3.63-.48 4.72-1.45 1.1-.97 1.78-2.43 2.06-4.39l.65-4.67c.28-1.96 0-3.43-.8-4.4zm-57.7 7.37l-.44.96-1 .28h-31.87l.54-3.77h31.87l.9.28.17.96zm6.9-7.37c-.8-.97-2.24-1.45-4.3-1.45h-41.8l-3.72 26.37h7.32l1.4-10.02h34.47c2.06 0 3.63-.48 4.72-1.45 1.1-.97 1.78-2.43 2.06-4.39l.65-4.67c.28-1.96 0-3.43-.8-4.4zm145.38 7.37l-.44.96-1 .28H758.5l.54-3.77h32.03l.9.28.16.96zm6.99-7.47c-.77-.9-2.17-1.35-4.17-1.35h-42.16l-3.73 26.37h7.3l1.42-10.05h31.72c1 0 1.44.5 1.33 1.54l-1.21 8.51h7.3l1.04-7.27.08-2.18-.54-1.8-1.33-1.25-2.3-.65c1.8-.12 3.15-.61 4-1.46a6.57 6.57 0 001.69-3.81l.3-2.3c.28-1.96.04-3.4-.74-4.3zm-49.85-1.35h-46.98l-3.73 26.38h46.99l.87-6.3H706.6l.52-3.77H743l.87-6.25h-35.88l.55-3.76h39.69zm-163.9 26.38h7.3l3.74-26.38h-7.32zm-2-6.3h-39.14l2.86-20.08h-7.32l-3.73 26.38h46.47zm-51.7-10.02h-35.65l.52-3.76h39.47l.9-6.3H490l-3.73 26.38h7.32l1.4-10.02h35.65z" />
+                                <path fill-opacity=".17" d="M600.5 400.84l-3.71 26.38h2.32l3.44-24.38h41.78c1.15 0 2.1.16 2.86.46a3.5 3.5 0 00-.58-1.01c-.81-.97-2.25-1.45-4.3-1.45zm50.83 0l-3.73 26.38h2.3l3.46-24.38h41.78c1.15 0 2.1.16 2.85.46a3.5 3.5 0 00-.58-1.01c-.8-.97-2.24-1.45-4.3-1.45zm101.3 0l-3.72 26.38h2.3l3.46-24.38h42.16c1.09 0 2 .14 2.72.41a3.4 3.4 0 00-.58-1.06c-.77-.9-2.17-1.35-4.17-1.35zm-262.63 0l-3.73 26.38h2.3l3.46-24.38h44.45l.3-2zm49.63 0l-3.73 26.38h2.3l3.45-24.38h5l.29-2zm49.32 0l-3.74 26.38h2.3l3.46-24.38h5l.29-2zm113.19 0l-3.74 26.38h2.3l3.47-24.38h44.67l.3-2zm-62.36 8.3l-.06.52-.46.96-1 .28h-31.87l2.03 2h31.88l.98-.28.46-.96.15-1.28-.17-.96-.9-.28zm50.9-.76l-.16 1.28-.46.96-1 .28h-29.54l-.3 2h31.89l1-.28.45-.96.15-1.28-.17-.96-2.03-2zm101.45 0l-.15 1.28-.43.96-1.01.28H758.5l2.03 2h32.03l1-.28.45-.96.15-1.28-.15-.96-2.03-2zm-296.26 2.52l2.02 2h33.35l.28-2zm212.13 0l2.03 2h33.57l.28-2zm82.62 8.26l-1.15 8.06h2.3l.94-6.51c.1-1.03-2.07-2.82-2.07-2.82l.05.28v.37zm-84.03 1.76l2.03 2H746l.28-2zm-162.5 0l2.02 2h36.85l.27-2z" />
+                            </g>
+                        </g>
+                        <g id="flipper__screen">
+                            <rect width="281" height="158" x="409" y="190" fill="url(#w)" rx="18" />
+                            <rect width="277" height="153" x="411" y="193" fill="#d9d8d6" rx="15" />
+                            <rect width="275" height="151" x="412" y="195" fill="#e5e5e5" rx="15" />
+                            <rect width="265" height="143" x="417" y="199" fill="#6a7770" rx="10" />
+                            <foreignObject width="265" height="143" x="417" y="199">
+                                <div class="flipper__screen__lcd__container">
+                                    <video id="flipper-lcd" class="flipper__screen__lcd" muted="muted" autoplay="autoplay"></video>
+                                </div>
+                            </foreignObject>
+                        </g>
+                        <g id="flipper__panel">
+                            <path fill="url(#y)" d="M787 190c-45.68 0-83 35.3-83 79s37.32 79 83 79h108c15.97 0 29-13.03 29-29 0-6.8-2.36-13.1-6.3-18.05a4 4 0 00-.02-.02L852.7 220.7C837.48 202 813.67 190 787 190z" />
+                            <path fill="#d9d8d6" d="M787 192c-44.66 0-81 34.44-81 77s36.34 77 81 77h108c14.89 0 27-12.11 27-27 0-6.34-2.2-12.2-5.87-16.8a2 2 0 000-.02l-64.99-80.2C836.32 203.71 813.08 192 787 192z" />
+                            <path fill="#e5e5e5" d="M787 194c-44.14 0-80 34-80 76s35.86 76 80 76h108a26.02 26.02 0 0020.35-42.18l-64.98-80.22C835.73 205.6 812.78 194 787 194z" />
+                            <circle cx="895" cy="320" r="25" fill="#9f582e" />
+                            <ellipse cx="787" cy="270" fill="#9f582e" rx="79" ry="75" />
+                        </g>
+                        <g id="flipper__button-back__view">
+                            <ellipse class="flipper__button__light" cx="895" cy="318" fill="#e89e3e" rx="23" ry="22" />
+                            <ellipse cx="895" cy="319" fill="#e8853e" rx="23" ry="21" />
+                            <path fill="#9f582e" fill-opacity=".8" d="M890.67 306.22c-.3 0-.58.09-.83.25l-9.12 6.02c-.9.6-.9 1.9 0 2.5l9.12 6.02a1.52 1.52 0 002.37-1.25v-4.01h8.1a5.49 5.49 0 015.58 5.51c0 3.1-2.45 5.52-5.57 5.52h-7.6c-1.12 0-2.03.9-2.03 2a2.02 2.02 0 002.07 2h7.56a9.6 9.6 0 009.63-9.52 9.6 9.6 0 00-9.63-9.53h-8.1v-4c0-.84-.7-1.52-1.55-1.51z" />
+                            <path fill="#e8853e" fill-opacity=".7" d="M891.07 307.62a.5.5 0 00-.27.08l-9.12 6.02c-.32.2-.32.6 0 .8l9.12 6.02c.37.25.76.04.76-.4v-4.01a1.03 1.02 0 011.03-1.02h8.11c3.67 0 6.6 2.9 6.6 6.53a6.55 6.55 0 01-6.6 6.54h-7.6c-.56 0-1 .43-1 .98 0 .56.44.99 1 .99a1.03 1.02 0 01.01 0h.03a1.03 1.02 0 01.01 0h7.55c4.74 0 8.6-3.82 8.6-8.5 0-4.7-3.86-8.52-8.6-8.52h-8.1a1.03 1.02 0 01-1.04-1.02v-4c0-.29-.2-.5-.49-.5z" />
+                        </g>
+                        <g id="flipper__disc">
+                            <ellipse cx="787" cy="268" fill="#e8853e" rx="76" ry="72" />
+                            <ellipse cx="787" cy="267" fill="#9f582e" rx="26" ry="25" />
+                            <path fill-opacity=".2" d="M787.04 207a2 2 0 00-1.75.97l-12 20A2 2 0 00775 231h24a2 2 0 001.71-3.03l-12-20a2 2 0 00-1.67-.97z" />
+                            <path fill="#e8853e" d="M786.98 207.5a.5.5 0 00-.41.24l-12 20a.5.5 0 00.43.76h24a.5.5 0 00.43-.76l-12-20a.5.5 0 00-.45-.24z" />
+                            <path fill-opacity=".2" d="M786.96 327a2 2 0 001.75-.97l12-20A2 2 0 00799 303h-24a2 2 0 00-1.71 3.03l12 20a2 2 0 001.67.97z" />
+                            <path fill="#e8853e" d="M787.02 324.5a.5.5 0 00.41-.24l12-20a.5.5 0 00-.43-.76h-24a.5.5 0 00-.43.76l12 20a.5.5 0 00.45.24z" />
+                            <path fill-opacity=".2" d="M850 270.04a2 2 0 00-.97-1.75l-20-12A2 2 0 00826 258v24a2 2 0 003.03 1.71l20-12a2 2 0 00.97-1.67z" />
+                            <path fill="#e8853e" d="M848.5 268.98a.5.5 0 00-.24-.41l-20-12a.5.5 0 00-.76.43v24a.5.5 0 00.76.43l20-12a.5.5 0 00.24-.45z" />
+                            <path fill="#000" fill-opacity=".2" d="M724 269.96a2 2 0 00.97 1.75l20 12A2 2 0 00748 282v-24a2 2 0 00-3.03-1.71l-20 12a2 2 0 00-.97 1.67z" />
+                            <path fill="#e8853e" d="M725.5 269.02a.5.5 0 00.24.41l20 12a.5.5 0 00.76-.43v-24a.5.5 0 00-.76-.43l-20 12a.5.5 0 00-.24.45z" />
+                        </g>
+                        <g id="flipper__button-ok__view">
+                            <ellipse cx="787" cy="268" fill="#804a2a" rx="22" ry="21" />
+                            <ellipse class="flipper__button__light" cx="787" cy="265" fill="#e89e3e" rx="22" ry="21" />
+                            <ellipse cx="787" cy="266" fill="#e8853e" rx="21" ry="20" />
+                        </g>
+                        <g id="flipper__led">
+                            <circle cx="710" cy="342" r="6" fill="#d9d8d6" />
+                            <circle id="flipper__led__lamp" cx="710" cy="342" r="5" fill="#d6fb44" />
+                            <path fill-opacity=".33" d="M710 337a5 5 0 00-5 5 5 5 0 005 5 5 5 0 005-5 5 5 0 00-5-5zm-.06 1.5a4 4 0 01.06 0 4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 013.94-4z" />
+                            <ellipse cx="710" cy="340.25" fill="#fff" fill-opacity=".5" rx="2" ry="1.25" />
+                        </g>
+                        <g id="flipper__disc-clickzone" opacity="0">
+                            <path id="flipper__button-up" d="M787 195a79 75 0 00-53.64 19.94l34.81 34.82a26 25 0 0118.68-7.76 26 25 0 01.15 0 26 25 0 0118.83 7.76l34.81-34.82A79 75 0 00787 195z" />
+                            <path id="flipper__button-right" d="M842.13 216.28l-34.95 34.96A26 25 0 01813 267a26 25 0 01-8.82 18.77l37.95 37.95A79 75 0 00866 270a79 75 0 00-23.87-53.72z" />
+                            <path id="flipper__button-down" d="M802.59 287a26 25 0 01-15.59 5 26 25 0 01-15.6-5l-38.04 38.06A79 75 0 00787 345a79 75 0 0053.64-19.94z" />
+                            <path id="flipper__button-left" d="M731.87 216.28A79 75 0 00708 270a79 75 0 0023.87 53.72l37.95-37.96A26 25 0 01761 267a26 25 0 015.82-15.77z" />
+                            <circle id="flipper__button-back" cx="895" cy="320" r="25" />
+                            <ellipse id="flipper__button-ok" cx="787" cy="267" rx="26" ry="25" />
+                        </g>
+                    </svg>
+                </section>
+            </div>
+            <div id="screen-2">
+                <section class="console">
+                    <input type="checkbox" class="filter-checkbox hidden" id="filter-input" checked>
+                    <input type="checkbox" class="filter-checkbox hidden" id="filter-uart" checked>
+                    <input type="checkbox" class="filter-checkbox hidden" id="filter-testbench" checked>
+                    <h1 class="console__title">Live Log</h1>
+                    <div class="console__actionbar">
+                        <div class="filters">
+                            <h2 class="filters__title">Filter:</h2>
+                            <div class="filters__checkbox">
+                                <label for="filter-input" class="label--input">input</label>
+                            </div>
+                            <div class="filters__checkbox">
+                                <label for="filter-uart" class="label--uart">uart</label>
+                            </div>
+                            <div class="filters__checkbox">
+                                <label for="filter-testbench" class="label--testbench">tb</label>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button id="reset-device" class="actions__action reset-device" title="Reset device"></button>
+                            <button id="upload-firmware" class="actions__action upload-firmware" title="Upload Code"></button>
+                            <button class="actions__action fullscreen-toggle" title="Toggle Fullscreen"></button>
+                        </div>
+                    </div>
+                    <div class="console__body">
+                        <div id="log" class="messages">
+                        </div>
+                    </div>
+                    <form id="console-input-form">
+                        <footer class="console__input">
+                            <input class="console__input__input-text" type="text" id="console-commandline" placeholder=">" autocomplete="off">
+                            <button class="console__input__input-button">Send</button>
+                        </footer>
+                    </form>
+                </section>
+            </div>
+        </div>
+        <div class="global-actions">
+            <button class="global-actions__action fullscreen-toggle" title="Toggle Fullscreen"></button>
+        </div>
+    </main>
+    <script src="/scripts/scripts.js"></script>
 </body>
 </html>
