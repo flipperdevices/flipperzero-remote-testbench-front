@@ -95,12 +95,17 @@
         consoleCommandline.autocomplete = 'off';
     }
 
-    if (!config.token) {
+
+    // Read token from #hash
+    const locationHash = window.location.hash.substr(1);
+
+    if (locationHash) {
+        config.token = locationHash;
+        history.replaceState(null, null, ' ');
+    }
+
+    if (!config.token || !authorize(config.token)) {
         deauthorize();
-    } else {
-        if (!authorize(config.token)) {
-            deauthorize();
-        }
     }
 
 
