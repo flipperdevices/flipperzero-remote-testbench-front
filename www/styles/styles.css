@@ -154,10 +154,10 @@ input, button {
 
             .flipper__screen__lcd {
                 position: absolute;
-                width: 440px;
-                height: 330px;
-                left: -72px;
-                top: -65px;
+                width: 333px;
+                height: 273px;
+                left: -32px;
+                top: -42px;
             }
 
 
