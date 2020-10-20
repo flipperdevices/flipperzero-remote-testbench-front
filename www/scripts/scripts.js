@@ -188,7 +188,7 @@
         let useSplitscreen = true;
 
         // Landscape fix
-        if (window.innerWidth >= 600 && window.innerHeight <= 700) {
+        if (window.innerWidth >= 600 && window.innerHeight <= 600) {
             useSplitscreen = false;
         }
 
