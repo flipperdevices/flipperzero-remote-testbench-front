@@ -16,3 +16,20 @@ Fliper Zero Remote test bech — is hardware + software system for remotely cont
 └── Dockerfile   # Docker files
 ```
 
+## Running in Docker
+
+There is **one volume** `/acme` used for Let's Encrypt certificates storage and **two env vars**: `ACCOUNT_EMAIL` and `LAB_DOMAIN_NAME`.
+
+Three ports are exposed: `80` and `443` for web and `1935` for RTMP receiver.
+
+The image could be used like that:
+```
+docker run --name lab -d \
+  -p 1935:1935 \
+  -p 80:80 \
+  -p 443:443 \
+  -v /root/acme:/acme \
+  -e ACCOUNT_EMAIL=johndoe@gmail.com \
+  -e LAB_DOMAIN_NAME=lab.flipperzero.one \
+  flipperdevices/flipperzero-remote-testbench-front
+```
