@@ -9,7 +9,7 @@
 //    }
 
     const config = {
-        videoUrl: 'https://lab.flipperzero.one:8080/live?port=1985&app=myapp&stream=randomname',
+        videoUrl: 'https://lab.flipperzero.one/live?app=myapp&stream=randomname',
         sseUrl: 'https://lab.flipperzero.one/api/messages-sse.php', 
         apiUrl: 'https://lab.flipperzero.one/api/',
         token: localStorage.getItem('token')
