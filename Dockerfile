@@ -24,6 +24,8 @@ RUN \
 
 
 FROM base AS release
+ARG SOURCE_COMMIT
+ENV SOURCE_COMMIT $SOURCE_COMMIT
 ENV LE_CONFIG_HOME="/acme"
 
 COPY --from=build /usr/local/nginx /usr/local/nginx
