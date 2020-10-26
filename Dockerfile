@@ -38,6 +38,10 @@ RUN set -ex && \
     ln -s /root/.acme.sh/acme.sh /usr/bin/acme.sh && \
     chmod +x /docker-entrypoint.sh
 
+RUN export BUILD_DATE=$(date) && \
+    envsubst '${SOURCE_COMMIT} ${BUILD_DATE}' < /var/www/index.html > /var/www/index.html.tmp && \
+    mv /var/www/index.html.tmp /var/www/index.html;
+
 EXPOSE 1935
 EXPOSE 80
 EXPOSE 443
