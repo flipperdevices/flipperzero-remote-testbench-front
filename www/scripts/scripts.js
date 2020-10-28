@@ -22,6 +22,7 @@
     const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
     const uploadButtons = document.querySelectorAll('#flipper__button-open-file, #upload-firmware');
     const resetButton = document.querySelector('#reset-device');
+    const clearButton = document.querySelector('#clear-console');
     const uploadSelector = document.querySelector('#upload-selector');
     const log = document.querySelector('#log');
     const discNavigator = document.querySelector('#flipper__disc');
@@ -144,6 +145,8 @@
         });
 
         insertLogItem('cmd', response);
+
+        consoleCommandline.value = '';
 
         return false;
     }
@@ -344,6 +347,12 @@
     });
 
 
+    // Clear
+    clearButton.addEventListener('click', function() {
+        log.innerHTML = '';
+    });
+
+
     // Commands
     const sendCommand = async function(action, data) {
         // Not logged in
@@ -433,13 +442,10 @@
             time = Math.floor(Date.now() / 1000);
         }
 
-
-
         const timestamp = document.createElement('div');
         timestamp.classList.add('message__timestamp');
         timestamp.innerText = formatTime(time);
         message.prepend(timestamp);
-
 
         log.append(message);
 

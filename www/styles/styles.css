@@ -623,6 +623,7 @@ input, button {
 
     .fullscreen-toggle {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f9f9f9' d='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'/%3E%3C/svg%3E");
+        display: none;
     }
 
     .fullscreen-toggle--active {
@@ -635,6 +636,10 @@ input, button {
 
     .reset-device {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f9f9f9' d='M14 12c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm-2-9a9 9 0 00-9 9H0l4 4 4-4H5a7 7 0 112.94 5.7l-1.42 1.44A9.01 9.01 0 1012 3z'/%3E%3C/svg%3E");
+    }
+
+    .clear-console {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f9f9f9' d='M15 16h4v2h-4zm0-8h7v2h-7zm0 4h6v2h-6zM3 18c0 1.1.9 2 2 2h6a2 2 0 002-2V8H3v10zM14 5h-3l-1-1H6L5 5H2v2h12z'/%3E%3C/svg%3E");
     }
 
 
@@ -772,6 +777,10 @@ input, button {
         .statusbar__status__short {
             display: block;
         }
+
+    .fullscreen-toggle {
+        display: block;
+    }
 }
 
 
