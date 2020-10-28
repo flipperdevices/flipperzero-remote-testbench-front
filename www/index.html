@@ -168,7 +168,7 @@
                     <h1 class="console__title">Live Log</h1>
                     <div class="console__actionbar">
                         <div class="filters">
-                            <h2 class="filters__title">Filter:</h2>
+                            <div class="filters__title">Filter:</div>
                             <div class="filters__checkbox">
                                 <label for="filter-input" class="label--input">input</label>
                             </div>
@@ -178,6 +178,30 @@
                             <div class="filters__checkbox">
                                 <label for="filter-testbench" class="label--testbench">tb</label>
                             </div>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="statusbar">
+                            <!-- <div class="status__title">Status:</div> -->
+                            <div class="statusbar__status status--busy-autotest">
+                                <span class="statusbar__status__full">Busy Autotest</span>
+                                <span class="statusbar__status__short">BA</span>
+                            </div>
+<!--                             <div class="statusbar__status status--busy-manual">
+                                <span class="statusbar__status__full">Busy Manual</span>
+                                <span class="statusbar__status__short">BM</span>
+                            </div>
+                            <div class="statusbar__status status--error">
+                                <span class="statusbar__status__full">E<span>RR</span>O<span>R</span></span>
+                                <span class="statusbar__status__short">E</span>
+                            </div>
+                            <div class="statusbar__status status--idle">
+                                <span class="statusbar__status__full">Idle</span>
+                                <span class="statusbar__status__short">I</span>
+                            </div>
+                            <div class="statusbar__status status--maintenance">
+                                <span class="statusbar__status__full">Maintenance</span>
+                                <span class="statusbar__status__short">M</span>
+                            </div> -->
                         </div>
                         <div class="actions">
                             <button id="reset-device" class="actions__action reset-device" title="Reset device"></button>
@@ -191,15 +215,19 @@
                         <div class="console__body__sidebar">
                             <div class="toggles">
                                 <div class="toggles__checkbox">
-                                    <input type="checkbox" id="toggle-bluetooth" class="toggle-checkbox hidden" checked>
+                                    <input type="checkbox" id="toggle-usb" class="toggle-checkbox hidden" enable>
+                                    <label for="toggle-usb">usb</label>
+                                </div>
+                                <div class="toggles__checkbox">
+                                    <input type="checkbox" id="toggle-bluetooth" class="toggle-checkbox hidden">
                                     <label for="toggle-bluetooth">bluetooth</label>
                                 </div>
                                 <div class="toggles__checkbox">
-                                    <input type="checkbox" id="toggle-rfid" class="toggle-checkbox hidden" checked>
+                                    <input type="checkbox" id="toggle-rfid" class="toggle-checkbox hidden">
                                     <label for="toggle-rfid">rfid</label>
                                 </div>
                                 <div class="toggles__checkbox">
-                                    <input type="checkbox" id="toggle-rfid-3" class="toggle-checkbox hidden" checked>
+                                    <input type="checkbox" id="toggle-rfid-3" class="toggle-checkbox hidden">
                                     <label for="toggle-rfid-3">rfid #3</label>
                                 </div>
                             </div>
