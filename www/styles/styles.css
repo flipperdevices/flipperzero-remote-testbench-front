@@ -9,6 +9,7 @@
 }
 
 :root {
+    --disabled-color: #868688;
     --event-color: #2b8949;
     --uart-color: #cb53aa;
     --dmesg-color: #48aec2;
@@ -338,18 +339,25 @@ input, button {
 
 .message--error {
     color: var(--error-color);
-    display: block;
+    display: flex;
 }
 
 .message--success {
     color: var(--success-color);
-    display: block;
+    display: flex;
 }
 
 .message--cmd {
     color: var(--cmd-color);
-    display: block;
+    display: flex;
 }
+
+    .message__timestamp {
+        color: var(--disabled-color);
+        margin-right: 10px;
+        user-select: none;
+    }
+
 
 /* Console Sidebar */
 .console__body__sidebar {
@@ -542,7 +550,7 @@ input, button {
 #filter-testbench:checked ~ .console__body .message--testbench,
 #filter-input:checked ~ .console__actionbar .label--input::after,
 #filter-input:checked ~ .console__body .message--input {
-    display: block;
+    display: flex;
 }
 
 

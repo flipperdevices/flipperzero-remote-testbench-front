@@ -62,6 +62,15 @@
         return library[Math.floor(Math.random() * Math.floor(library.length))]
     }
 
+    const formatTime = function(unixTimestap) {
+      const dtFormat = new Intl.DateTimeFormat('en-GB', {
+        timeStyle: 'medium',
+        timeZone: 'UTC'
+      });
+      
+      return dtFormat.format(new Date(unixTimestap * 1000));
+    }
+
 
     // Auth
     const authorize = async function(token) {
@@ -395,7 +404,7 @@
 
         try {
             const data = JSON.parse(event.data);
-            insertLogItem(data.type, data.data);
+            insertLogItem(data.type, data.data, data.ts);
         } catch {
             insertLogItem('error', event.data);
         }
@@ -407,15 +416,31 @@
 
 
     // Log
-    const insertLogItem = function(type, data) {
+    const insertLogItem = function(type, data, time) {
         // Do not autoscroll if scrolled manually
         // const shouldScroll = true;
         // const shouldScroll = log.scrollTop === log.scrollHeight - log.offsetHeight;
         // 50 px gap need to fix mobile FF & Chrome skips calculations ¯\_(ツ)_/¯ 
         const shouldScroll = (log.scrollHeight - log.offsetHeight) - log.scrollTop < 50;
+
         const message = document.createElement('div');
         message.classList.add('message', `message--${type}`);
         message.innerText = JSON.stringify(data);
+
+        console.log(time);
+
+        if (!time) {
+            time = Math.floor(Date.now() / 1000);
+        }
+
+
+
+        const timestamp = document.createElement('div');
+        timestamp.classList.add('message__timestamp');
+        timestamp.innerText = formatTime(time);
+        message.prepend(timestamp);
+
+
         log.append(message);
 
         if (shouldScroll) {
