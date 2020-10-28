@@ -17,6 +17,8 @@
     --error-color: #cb5353;
     --success-color: #2b8949;
     --cmd-color: #f9f9f9;
+    --toggle-color: #f9f9f9;
+    --toggle-on-color: #2b8949;
 }
 
 * {
@@ -341,6 +343,78 @@ input, button {
     display: block;
 }
 
+/* Console Sidebar */
+.console__body__sidebar {
+
+}
+
+
+
+/* Toggles */
+.toggles {
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
+}
+
+    .toggles__checkbox {
+        text-transform: uppercase;
+        display: flex;
+        position: relative;
+        margin-top: 10px;
+    }
+
+    .toggles__checkbox:first-child {
+        margin-top: 0;
+    }
+
+        .toggles__checkbox input[type="checkbox"]:checked + label:after {
+            display: block;
+            background-color: var(--toggle-on-color);
+        }
+
+        .toggles__checkbox input[type="checkbox"]:checked + label {
+            color: var(--toggle-on-color);
+        }
+
+        .toggles__checkbox input[type="checkbox"]:checked + label:before {
+            border-color: var(--toggle-on-color);
+        }
+
+        .toggles__checkbox label {
+            font-size: 1.75rem;
+            line-height: 1;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            color: var(--toggle-color);
+        }
+
+        .toggles__checkbox label::before {
+            content: "";
+            display: block;
+            width: 2rem;
+            height: 2rem;
+            border-width: 2px;
+            border-style: solid;
+            box-sizing: border-box;
+            margin-right: 1rem;
+            border-color: var(--toggle-color);
+        }
+
+        .toggles__checkbox label::after {
+            content: "";
+            width: 1rem;
+            height: 1rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: .5rem;
+            background-color: var(--toggle-color);
+            display: none;
+        }
+
+
 
 /* Filters */
 .filters {
@@ -383,7 +457,6 @@ input, button {
 
         .filters__checkbox label::after {
             content: "";
-            display: block;
             width: 1rem;
             height: 1rem;
             position: absolute;
